@@ -1,0 +1,39 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<title>index</title>
+
+<link type="text/css" th:href="@{/css/zzsc.css}" rel="stylesheet" />
+<link rel="stylesheet" th:href="@{/css/login.css}" media="screen" type="text/css"/>
+
+</head>
+<body>
+<div style="text-align:center;clear:both;">
+</div>
+<div class="out">
+	<div class="fade-in">
+		<div class="container">
+			<div class="one common"></div>
+			<div class="two common"></div>
+			<div class="three common"></div>
+			<div class="four common"></div>
+			<div class="five common"></div>
+			<div class="six common"></div>
+			<div class="seven common"></div>
+			<div class="eight common"></div>
+		</div>
+		<div class="bar">
+			<div class="progress"></div>
+		</div>
+	</div>
+</div>
+<!--<a href="/logout">退出</a>-->
+<div style="width: 200px;">
+	<form th:action="@{/logout_1}" method="post">
+		<input type="submit" value="退出" id="button-blue"/>
+	</form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmxe.mapper.UserMapper">
+    <select id="loadUserByUsername" resultType="com.xmxe.entity.User">
+        select * from user1 where username=#{username};
+    </select>
+    <select id="getUserRoleByUid" resultType="com.xmxe.entity.Role">
+        select r.* from role1 r,user1_role1 ur where ur.uid=#{uid} and ur.rid=r.id
+    </select>
+</mapper>
