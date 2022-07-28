@@ -30,8 +30,6 @@ public class CustomSecurityMetadataSource implements FilterInvocationSecurityMet
 	 * 如果当前请求的 URL 地址和数据库中 menu 表的所有项都匹配不上，那么最终返回 null。如果返回 null，那么受保护对象到底能不能访问呢？
 	 * 这就要看 AbstractSecurityInterceptor 对象中的 rejectPublicInvocations 属性了，该属性默认为 false，表示当 getAttributes方法返回 null 时，允许访问受保护对象
 	 * @param object 受保护的对象
-	 * @return
-	 * @throws IllegalArgumentException
 	 */
 	@Override
 	public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
@@ -48,7 +46,6 @@ public class CustomSecurityMetadataSource implements FilterInvocationSecurityMet
 
 	/**
 	 * 该方法可以用来返回所有的权限属性，以便在项目启动阶段做校验，如果不需要校验，则直接返回 null 即可
-	 * @return
 	 */
 	@Override
 	public Collection<ConfigAttribute> getAllConfigAttributes() {
@@ -57,8 +54,6 @@ public class CustomSecurityMetadataSource implements FilterInvocationSecurityMet
 
 	/**
 	 * 该方法表示当前对象支持处理的受保护对象是 FilterInvocation
-	 * @param clazz
-	 * @return
 	 */
 	@Override
 	public boolean supports(Class<?> clazz) {

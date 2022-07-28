@@ -11,8 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Spring Security进行用户认证时，需要根据用户的账号、密码、权限等信息进行认证，
- * 因此，需要根据查询到的用户信息封装成一个认证用户对象并交给Spring Security进行认证。
+ * Spring Security进行用户认证时，需要根据用户的账号、密码、权限等信息进行认证，因此，需要根据查询到的用户信息封装成一个认证用户对象并交给Spring Security进行认证。
  * 查询用户输入的账号所对应的 正确 的密码和角色等信息并封装成UserDetails对象，然后返回给AthenticationProvider进行认证，
  * AthenticationProvider的作用即是认证用户的密码等认证信息是否正确
  */

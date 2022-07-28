@@ -12,9 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * javax.servlet.Filter原生接口，Spring的OncePerRequestFilter类实际上是一个实现了Filter接口的抽象类。
- * spring对Filter进行了一些封装处理。 OncePerRequestFilter是在一次外部请求中只过滤一次。对于服务器内部之间的forward等请求，不会再次执行过滤方法。
- * 实现Filter接口，也会在一次请求中只过滤一次, 实际上，OncePerRequestFilter是为了兼容不同的web 容器，
+ * OncePerRequestFilter类实际上是一个实现了Filter接口的抽象类。spring对Filter进行了一些封装处理，OncePerRequestFilter是在一次外部请求中只过滤一次。
+ * 对于服务器内部之间的forward等请求，不会再次执行过滤方法。实现Filter接口，也会在一次请求中只过滤一次, 实际上，OncePerRequestFilter是为了兼容不同的web容器，
  * 也就是说其实不是所有的容器都过滤一次。Servlet版本不同，执行的过程也不同。例如：在Servlet2.3中，Filter会过滤一切请求，
  * 包括服务器内部使用forward和<%@ include file=/login.jsp%>的情况，但是在servlet2.4中，Filter默认只会过滤外部请求
  *

@@ -30,8 +30,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 * 用到权限表达式，所以我们通过 UrlAuthorizationConfigurer 来进行配置。
 	 * 在配置的过程中，通过 withObjectPostProcessor 方法调用 ObjectPostProcessor 对象后置处理器，在对象后置处理器中，
 	 * 将 FilterSecurityInterceptor 中的 SecurityMetadataSource 对象替换为我们自定义的 customSecurityMetadataSource 对象即可。
-	 * @param http
-	 * @throws Exception
 	 */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {

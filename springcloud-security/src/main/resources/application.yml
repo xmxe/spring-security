@@ -12,7 +12,8 @@ spring:
     password: root
 
   thymeleaf:
-    prefix: classpath:/templates/ # 不加这个，接口自动到resources/templates目录下找与接口返回的相同名称的html
+    # 不加这个，接口自动到resources/templates目录下找与接口返回的相同名称的html
+    prefix: classpath:/templates/
     cache: false
     suffix: .html
 
@@ -20,9 +21,3 @@ spring:
 #  client:
 #    serviceUrl:
 #      defaultZone: http://localhost:8080/eureka/
-
-
-
-
-
-

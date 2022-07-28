@@ -58,7 +58,7 @@ public class SecurityConfiguration {
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     /**
-     * 不使用@Bean的话直接继承webSecurityConfigurerAdapter类重写方法
+     * 不使用@Bean的话直接继承WebSecurityConfigurerAdapter类重写方法
      */
     @Bean
     public WebSecurityConfigurerAdapter webSecurityConfigurerAdapter() {
@@ -158,7 +158,6 @@ public class SecurityConfiguration {
 
     /**
      * 密码加密策略
-     *
      */
     @Bean
     PasswordEncoder passwordEncoder() {
@@ -170,7 +169,6 @@ public class SecurityConfiguration {
 
     /**
      * 角色集成 user角色能访问的admin也角色可以访问
-     *
      */
     @Bean
     RoleHierarchy roleHierarchy() {

@@ -9,7 +9,6 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -31,16 +30,9 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
 	/**
 	 * 登陆验证时调用
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws AuthenticationException
-	 * @throws IOException
-	 * @throws ServletException
 	 */
 	@Override
-	public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
-			throws AuthenticationException, IOException, ServletException {
+	public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException{
 
 		User creds = new User();
 		creds.setUsername(req.getParameter("username"));
@@ -54,30 +46,18 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
 	/**
 	 * 验证成功后调用
-	 * @param req
-	 * @param res
-	 * @param chain
-	 * @param auth
-	 * @throws IOException
-	 * @throws ServletException
 	 */
 	@Override
-	protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
-			Authentication auth) throws IOException, ServletException {
+	protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) {
 		logger.info("校验成功");
 	}
 
 
 	/**
 	 * 校验失败后调用
-	 * @param request
-	 * @param response
-	 * @param failed
-	 * @throws IOException
-	 * @throws ServletException
 	 */
 	@Override
-	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
 
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);

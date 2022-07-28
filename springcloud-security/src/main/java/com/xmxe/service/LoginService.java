@@ -21,8 +21,6 @@ public class LoginService {
 
     /**
      * 根据用户名获取用户信息
-     * @param username
-     * @return
      */
     public List<User> getUserByUsername(String username) {
         return loginDao.getUserByUsername(username);
@@ -30,8 +28,6 @@ public class LoginService {
 
     /**
      * 根据用户名获取权限信息
-     * @param username
-     * @return
      */
     public List<String> getPermissionsByUsername(String username) {
         return loginDao.getPermissionsByUsername(username);
@@ -39,8 +35,6 @@ public class LoginService {
 
     /**
      * 根据用户名获取角色信息
-     * @param username
-     * @return
      */
     public List<String> getRoleByUsername(String username) {
         return loginDao.getRoleByUsername(username);
