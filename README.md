@@ -29,12 +29,15 @@
 ##### Spring Security认证流程
 
 1. Spring Security支持多种用户认证的方式，最常用的是基于用户名和密码的用户认证方式，其认证流程如下图所示：
+
 ![](https://github.com/xmxe/spring-security/blob/master/assest/rzlc.png)
 
 2. “记住我”功能的认证流程如下图所示：
+
 ![](https://github.com/xmxe/spring-security/blob/master/assest/rememberme.png)
 
 3. Spring Security的用户认证流程是由一系列的过滤器链来实现的，默认的关于用户认证的过滤器链大致如下图所示：
+
 ![](https://github.com/xmxe/spring-security/blob/master/assest/filterchain.png)
 
 
