@@ -1,4 +1,4 @@
-package com.xmxe.config;
+package com.xmxe.config.filter;
 
 import com.xmxe.entity.User;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,12 +18,11 @@ import java.io.IOException;
  * attemptAuthentication - 登录时需要验证时候调用
  * successfulAuthentication - 验证成功后调用
  * unsuccessfulAuthentication - 验证失败后调用，这里直接灌入500错误返回，由于同一JSON返回，HTTP就都返回200了
- *
  * AbstractAuthenticationProcessingFilter extends GenericFilterBean
  */
-public class LoginFilter extends AbstractAuthenticationProcessingFilter {
+public class LoginCheckFilter extends AbstractAuthenticationProcessingFilter {
 
-	public LoginFilter(String url, AuthenticationManager authManager) {
+	public LoginCheckFilter(String url, AuthenticationManager authManager) {
 		super(new AntPathRequestMatcher(url));
 		setAuthenticationManager(authManager);
 	}
@@ -37,7 +36,8 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 		User creds = new User();
 		creds.setUsername(req.getParameter("username"));
 		creds.setPassword(req.getParameter("password"));
-		// authenticate()⽅法中， 根据UserDetailsService.loadUserByUsername()的真实信息开始进⾏密码校验，校验成功就构造⼀个认证过的 UsernamePasswordAuthenticationToken 对象放⼊ SecurityContext
+		// authenticate()⽅法中， 根据UserDetailsService.loadUserByUsername()的真实信息开始进⾏密码校验，
+		// 校验成功就构造⼀个认证过的 UsernamePasswordAuthenticationToken 对象放⼊ SecurityContext
 		// 此方法返回用户校验成功后 successfulAuthentication()方法的Authentication参数
 		return getAuthenticationManager().authenticate(
 				new UsernamePasswordAuthenticationToken(creds.getUsername(), creds.getPassword())

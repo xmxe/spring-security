@@ -1,4 +1,4 @@
-package com.xmxe.config;
+package com.xmxe.config.filter;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,7 +44,7 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
                 response.setContentType("application/json;charset=utf-8");
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 PrintWriter out = response.getWriter();
-                Map resultMap = new HashMap();
+                Map<String,Object> resultMap = new HashMap<>();
                 resultMap.put("code", HttpServletResponse.SC_UNAUTHORIZED);
                 resultMap.put("msg", "用户名或密码错误！");
                 out.write(new ObjectMapper().writeValueAsString(resultMap));
@@ -72,7 +72,7 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
             response.setContentType("application/json;charset=utf-8");
             response.setStatus(HttpServletResponse.SC_OK);
             PrintWriter out = response.getWriter();
-            Map resultMap = new HashMap();
+            Map<String,Object> resultMap = new HashMap();
             resultMap.put("code", HttpServletResponse.SC_OK);
             resultMap.put("msg", "认证通过！");
             out.write(new ObjectMapper().writeValueAsString(resultMap));

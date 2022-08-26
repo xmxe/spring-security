@@ -1,3 +1,4 @@
+##### HttpSecurity常用方法
 
 | [HttpSecurity常用方法](https://blog.csdn.net/qq_52006948/article/details/122729236)                | 说明                                                         |
 | ------------------- | ------------------------------------------------------------ |
@@ -25,9 +26,16 @@
 
 ---
 
-[spring security的认证和授权流程](https://blog.csdn.net/u011066470/article/details/119086893)
+##### Spring Security认证流程
 
-[一文带你搞懂Spring Security认证授权流程](https://zhuanlan.zhihu.com/p/502290821)
+1. Spring Security支持多种用户认证的方式，最常用的是基于用户名和密码的用户认证方式，其认证流程如下图所示：
+![](https://github.com/xmxe/spring-security/blob/master/assest/rzlc.png)
+
+2. “记住我”功能的认证流程如下图所示：
+![](https://github.com/xmxe/spring-security/blob/master/assest/rememberme.png)
+
+3. Spring Security的用户认证流程是由一系列的过滤器链来实现的，默认的关于用户认证的过滤器链大致如下图所示：
+![](https://github.com/xmxe/spring-security/blob/master/assest/filterchain.png)
 
 
 | SpringSecurity 采用的是责任链的设计模式， | 它有一条很长的过滤器链。                                     |
@@ -48,29 +56,32 @@
 | FilterSecurityInterceptor                 | 可以看做过滤器链的出口                                       |
 | RememberMeAuthenticationFilter            | 当用户没有登录而直接访问资源时, 从 cookie里找出用户的信息, 如果 Spring Security 能够识别出用户提供的 remember me cookie,用户将不必填写用户名和密码, 而是直接登录进入系统，该过滤器默认不开启。 |
 
----
-~~~
-spring security登录流程
+- [spring security的认证和授权流程](https://blog.csdn.net/u011066470/article/details/119086893)
+- [一文带你搞懂Spring Security认证授权流程](https://zhuanlan.zhihu.com/p/502290821)
 
-1. 用户在页面输入账户密码并提交
+---
+
+##### Spring Security登录流程
+
+1. 用户在页面输入账户密码并提交。
 2. UsernamePasswordAuthenticationFilter拦截认证请求并获取用户输入的账号和密码，
-然后创建一个未认证的Authentication对象并交给AuthenticationManager进行认证
-3. AuthenticationManager调用相应的AuthenticationProvider对象对未认证的Authentication对象进行认证
-4. AuthenticationProvider从未认证的Authentication对象中获取用户输入的账号，并调用UserDetailsService对象查询
-该账号的正确信息，然后检查用户输入的账号信息与正确的账号信息是否相同(UserDetailsService查询用户所输入的账号所对应的
-正确的密码和角色等信息并封装成UserDetails对象，然后返回给AuthenticationProvider进行认证)，
-如果不相同则认证失败并返回，如果相同认证成功并创建一个已认证的Authentication对象。
+然后创建一个未认证的Authentication对象并交给AuthenticationManager进行认证。
+3. AuthenticationManager调用相应的AuthenticationProvider对象对未认证的Authentication对象进行认证。
+4. AuthenticationProvider从未认证的Authentication对象中获取用户输入的账号，并调用UserDetailsService对象查询该账号的正确信息，然后检查用户输入的账号信息与正确的账号信息是否相同--(UserDetailsService查询用户所输入的账号所对应的正确的密码和角色等信息并封装成UserDetails对象，然后返回给AuthenticationProvider进行认证)，如果不相同则认证失败并返回，如果相同认证成功并创建一个已认证的Authentication对象。
 调用链
-AuthenticationManager.authenticate()--> ProviderManager.authenticate()-->DaoAuthenticationProvider(AbstractUserDetailsAuthenticationProvider).authenticate()处理 
-在最后的authenticate()⽅法中，调⽤了 UserDetailsService.loadUserByUsername()并进⾏了密码校验，校验成功就构造⼀个认证过的 UsernamePasswordAuthenticationToken 对象放⼊ SecurityContext.
-5.SecurityContext将已认证的Authentication对象保存在spring security上下文环境中表示用户已认证
+AuthenticationManager.authenticate()--> ProviderManager.authenticate()-->DaoAuthenticationProvider(AbstractUserDetailsAuthenticationProvider).authenticate()处理 。
+在最后的authenticate()⽅法中，调⽤了 UserDetailsService.loadUserByUsername()并进⾏了密码校验，校验成功就构造⼀个认证过的 UsernamePasswordAuthenticationToken 对象放⼊ SecurityContext。
+5. SecurityContext将已认证的Authentication对象保存在Spring Security上下文环境中表示用户已认证。
 
-~~~
 
 ---
+
+##### 相关文章
+
 - [SpringBoot安全认证Security](https://zhuanlan.zhihu.com/p/67519928)
 - [单点登陆注解 @EnableOAuth2Sso](https://mp.weixin.qq.com/s?__biz=MzI1NDY0MTkzNQ==&mid=2247488278&idx=1&sn=b21345a1daa86dd48ea89cdb9138def8&scene=21#wechat_redirect)
 - [Spring Security 中的权限注解很神奇吗?(@PreAuthorize)](https://mp.weixin.qq.com/s/TaPlws-ZLTDUnffuiw-r1Q)
+- [68篇干货，手把手教你通关 Spring Security！](https://mp.weixin.qq.com/s/2sVZxZDXP_dq-YgS86u4DQ)
 - [Spring Security5.x 教程合集(江南一点雨)](http://www.javaboy.org/springsecurity/)
 - [想要控制好权限，这八个注解你必须知道](https://mp.weixin.qq.com/s/1NlWRwiBs8dl3Lu40haz5Q)
 - [进入 SpringBoot2.7，有一个重要的类过期了](https://mp.weixin.qq.com/s/WFbcvzqIM2muK3Ha4B0a3w)
@@ -78,5 +89,8 @@ AuthenticationManager.authenticate()--> ProviderManager.authenticate()-->DaoAuth
 - [如何在项目中自定义权限表达式](https://mp.weixin.qq.com/s/NTyYPGOSF9NobwtHas97sA)
 - [TienChin 项目中的 RBAC 是怎么玩的？](https://mp.weixin.qq.com/s/6wXK0zk_x_TP-qhHZQForw)
 - [权限想要细化到按钮，怎么做？](https://mp.weixin.qq.com/s/g_8UprUi6cX70q4kTv4W9g)
+- [Spring Security用户认证和权限控制（默认实现）](https://blog.csdn.net/weixin_44516305/article/details/87860966)
 - [Spring Security用户认证和权限控制（自定义实现）](https://blog.csdn.net/weixin_44516305/article/details/88868791)
 - [Spring Security 动态权限实现方案！](https://mp.weixin.qq.com/s/Bau8poOA4fMh3DNb9GaR1A)
+- [Spring Security 最佳实践，看了必懂！※](https://mp.weixin.qq.com/s/rJqXpL7Zy9q_TU5B_E7nSw)
+

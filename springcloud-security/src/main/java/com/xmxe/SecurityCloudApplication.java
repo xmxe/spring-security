@@ -2,8 +2,10 @@ package com.xmxe;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 
 //@EnableDiscoveryClient
+@EnableGlobalMethodSecurity(securedEnabled = true,prePostEnabled = true)//使用注解@Secured需要在配置类中添加注解 使@Secured注解生效
 @SpringBootApplication
 public class SecurityCloudApplication {
 

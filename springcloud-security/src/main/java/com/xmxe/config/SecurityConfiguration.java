@@ -1,5 +1,9 @@
 package com.xmxe.config;
 
+import com.xmxe.config.filter.CustomRequestFilter;
+import com.xmxe.config.handler.CustomFailureHandler;
+import com.xmxe.config.handler.CustomSuccessHandler;
+import com.xmxe.config.handler.MyAccessDeniedHandler;
 import com.xmxe.service.MyUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -11,8 +15,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
@@ -31,13 +37,13 @@ public class SecurityConfiguration {
      * 登陆失败处理
      */
     @Autowired
-    FailureHandler failureHandler;
+    CustomFailureHandler failureHandler;
 
     /**
      * 登录成功处理
      */
     @Autowired
-    SuccessHandler successHandler;
+    CustomSuccessHandler successHandler;
 
     /**
      * session过期处理
@@ -57,10 +63,99 @@ public class SecurityConfiguration {
     @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    /**
-     * 不使用@Bean的话直接继承WebSecurityConfigurerAdapter类重写方法
-     */
+    @Autowired
+    MyAccessDeniedHandler myAccessDeniedHandler;
+
+
+    public void configureSecurity(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+            .formLogin()
+            .loginPage("/login")
+            .loginProcessingUrl("/doLogin") // 该方法并不需要定义servlet，只需要保证前端表单的action和该出的url值为一样即可，如果定义了一个同名的servlet，则会优先执行自定义的servlet，不会走security框架的验证
+            // .defaultSuccessUrl("/hello",true) // 配置默认首页 加true相当于successForwardUrl 二者区别见下方注释
+            // .usernameParameter("name") // 不配置的话登陆表单参数必须为username
+            // .passwordParameter("passwd") // 不配置的话登陆表单参数必须为password
+            // .failureForwardUrl("/error")
+            .failureHandler(failureHandler) // 登陆失败时将自定义信息写入session
+            // .successHandler(successHandler) // 登陆成功后的handler
+            .permitAll() // 允许访问
+            .and()
+            .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint) // 配置认证失败时的调用
+                .accessDeniedHandler(myAccessDeniedHandler)
+            .and()
+            .sessionManagement() // session管理器
+                // ALWAYS:总是创建HttpSession. IF_REQUIRED:Spring Security只会在需要时创建一个HttpSession
+                // NEVER:Spring Security不会创建HttpSession，但如果它已经存在，将可以使用HttpSession
+                // STATELESS:Spring Security永远不会创建HttpSession，它不会使用HttpSession来获取SecurityContext
+                // .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .maximumSessions(1) // 相同用户只允许登陆1个
+                // .maxSessionsPreventsLogin(true) // 相同用户登陆后不允许在登陆（禁止新的登录）
+                .expiredSessionStrategy(sessionInformationExpiredStrategy) // 自定义session过期策略
+                .and()
+                .invalidSessionUrl("/login") // session过期跳转地址
+            .and()
+                .rememberMe()
+                .rememberMeParameter("remember-me")
+                .userDetailsService(myUserDetailService)
+                .rememberMeCookieName("rem")
+                .tokenValiditySeconds(60) // 记住我的时间 (秒)
+                // .tokenRepository(persistentTokenRepository()) // 设置数据访问层
+            .and()
+                .authorizeRequests()
+                .antMatchers("/guest/**","/error","/login").permitAll()// /guest/**的接口会被允许所有人访问，包括未登录的人。
+                .antMatchers("/admin/**").hasRole("adminRole")// /admin/**的接口只能被拥有admin角色的用户访问。
+                .antMatchers("/authenticated/**").authenticated()// /authenticated/**的接口可以被所有已经登录的用户访问。
+                .antMatchers("/permission/**").hasAuthority("permission")// /permission/的接口可以被拥有permission权限的用户访问。
+                .antMatchers("/ipaddress/**").hasIpAddress("127.0.0.1")
+                .anyRequest().authenticated()//所有的都需要认证
+            .and()
+                .logout()
+                .logoutUrl("/logout_1")//spring security设置logout_1为系统退出的url 当监测到这个请求url时使用spring security处理登出逻辑 请求方式默认使用post a标签方式为get 可以在spring mvc中处理登出逻辑 但是这样的话就和spring security没关系了
+                //.logoutRequestMatcher(new AntPathRequestMatcher("/logout","POST"))//自定义请求方式
+                .logoutSuccessUrl("/login")//注销成功后要跳转的页面。
+                .deleteCookies()//用来清除 cookie
+                // .invalidateHttpSession(true) // 回收HttpSession对象。退出之前调用HttpSession.invalidate() 默认 true
+                // .clearAuthentication(true) // 退出之前，清空Security记录的用户登录标记。 默认 true
+                // .addLogoutHandler() // 增加退出处理器。
+                .permitAll()
+            .and()
+                .addFilterBefore(customRequestFilter, UsernamePasswordAuthenticationFilter.class)// 在UsernamePasswordAuthenticationFilter过滤器执行之前执行自定义的过滤器
+                // .addFilterBefore(new LoginFilter("/login", authenticationManager()), UsernamePasswordAuthenticationFilter.class)// 添加一个过滤器 所有访问 /login 的请求交给 LoginFilter 来处理
+                // .addFilter(new TokenLoginFilter(super.authenticationManager())) // 功能同上 也是校验登录 extends UsernamePasswordAuthenticationFilter
+                // .addFilter(new TokenVerifyFilter(super.authenticationManager())) // 处理token的过滤器
+                .csrf().disable();
+    }
+
     @Bean
+    WebSecurityCustomizer webSecurityCustomizer() {
+        return new WebSecurityCustomizer() {
+            @Override
+            public void customize(WebSecurity web) {
+                web.ignoring().antMatchers("/js/**", "/css/**", "/images/**","/**/favicon.*");
+            }
+        };
+    }
+
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
+        configureSecurity(httpSecurity);
+        return httpSecurity.build();
+    }
+
+    // @Bean
+    // UserDetailsService userDetailsService() {
+    //     InMemoryUserDetailsManager users = new InMemoryUserDetailsManager();
+    //     users.createUser(User.withUsername("").password("{noop}123").roles("admin").build());
+    //     users.createUser(User.withUsername("").password("{noop}123").roles("admin").build());
+    //     return users;
+    // }
+    /**
+     *
+     * 不使用@Bean的话直接继承WebSecurityConfigurerAdapter类重写方法
+     * springboot2.7之后WebSecurityConfigurerAdapter已过时
+     */
+    // @Bean
     public WebSecurityConfigurerAdapter webSecurityConfigurerAdapter() {
         return new WebSecurityConfigurerAdapter() {
 
@@ -71,58 +166,7 @@ public class SecurityConfiguration {
 
             @Override
             protected void configure(HttpSecurity httpSecurity) throws Exception {
-                httpSecurity
-                    .formLogin()
-                        .loginPage("/login")
-                        .loginProcessingUrl("/doLogin") // 该方法并不需要定义servlet，只需要保证前端表单的action和该出的url值为一样即可，如果定义了一个同名的servlet，则会优先执行自定义的servlet，不会走security框架的验证
-                        //.defaultSuccessUrl("/hello",true) //配置默认首页 加true相当于successForwardUrl 二者区别见下方注释
-                        //.usernameParameter("name") // 不配置的话登陆表单参数必须为username
-                        //.passwordParameter("passwd") // 不配置的话登陆表单参数必须为password
-                        //.failureForwardUrl("/error")
-                        .failureHandler(failureHandler) // 登陆失败时将自定义信息写入session
-                        //.successHandler(successHandler) // 登陆成功后的handler
-                        .permitAll() // 允许访问
-                        .and()
-                    .exceptionHandling()
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint) // 配置认证失败时的调用
-                        .and()
-                    .sessionManagement() // session管理器
-                        // ALWAYS:总是创建HttpSession. IF_REQUIRED:Spring Security只会在需要时创建一个HttpSession
-                        // NEVER:Spring Security不会创建HttpSession，但如果它已经存在，将可以使用HttpSession
-                        // STATELESS:Spring Security永远不会创建HttpSession，它不会使用HttpSession来获取SecurityContext
-                        // .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                        .maximumSessions(1) // 相同用户只允许登陆1个
-                        //.maxSessionsPreventsLogin(true) // 相同用户登陆后不允许在登陆（禁止新的登录）
-                        .expiredSessionStrategy(sessionInformationExpiredStrategy) // 自定义session过期策略
-                        .and()
-                        .invalidSessionUrl("/login") // session过期跳转地址
-                        .and()
-                    .rememberMe()
-                        .rememberMeParameter("remember-me")
-                        .userDetailsService(myUserDetailService)
-                        .tokenValiditySeconds(60) // 记住我的时间 (秒)
-                        //.tokenRepository(persistentTokenRepository()) // 设置数据访问层
-                        .and()
-                    .authorizeRequests()
-                        .antMatchers("/guest/**","/error","/login").permitAll()// /guest/**的接口会被允许所有人访问，包括未登录的人。
-                        .antMatchers("/admin/**").hasRole("adminRole")// /admin/**的接口只能被拥有admin角色的用户访问。
-                        .antMatchers("/authenticated/**").authenticated()// /authenticated/**的接口可以被所有已经登录的用户访问。
-                        .antMatchers("/permission/**").hasAuthority("permission")// /permission/的接口可以被拥有permission权限的用户访问。
-                        .antMatchers("/ipaddress/**").hasIpAddress("127.0.0.1")
-                        .anyRequest().authenticated()//所有的都需要认证
-                        .and()
-                    .logout()
-                        .logoutUrl("/logout_1")//spring security设置logout_1为系统退出的url 当监测到这个请求url时使用spring security处理登出逻辑 请求方式默认使用post a标签方式为get 可以在spring mvc中处理登出逻辑 但是这样的话就和spring security没关系了
-                        //.logoutRequestMatcher(new AntPathRequestMatcher("/logout","POST"))//自定义请求方式
-                        .logoutSuccessUrl("/login")//注销成功后要跳转的页面。
-                        .deleteCookies()//用来清除 cookie
-                        .permitAll()
-                        .and()
-                    .addFilterBefore(customRequestFilter, UsernamePasswordAuthenticationFilter.class)// 在UsernamePasswordAuthenticationFilter过滤器执行之前执行自定义的过滤器
-                    // .addFilterBefore(new LoginFilter("/login", authenticationManager()), UsernamePasswordAuthenticationFilter.class)// 添加一个过滤器 所有访问 /login 的请求交给 LoginFilter 来处理
-                    // .addFilter(new TokenLoginFilter(super.authenticationManager())) // 功能同上 也是校验登录 extends UsernamePasswordAuthenticationFilter
-                    // .addFilter(new TokenVerifyFilter(super.authenticationManager())) // 处理token的过滤器
-                        .csrf().disable();
+                configureSecurity(httpSecurity);
             }
 
             //代码创建用户密码
@@ -161,9 +205,9 @@ public class SecurityConfiguration {
      */
     @Bean
     PasswordEncoder passwordEncoder() {
-//        return NoOpPasswordEncoder.getInstance();// 不加密 在demo中测试使用 生产环境不建议
-//        return new BCryptPasswordEncoder();// BCryptPasswordEncoder：相同的密码明文每次生成的密文都不同，安全性更高
-
+//         return NoOpPasswordEncoder.getInstance();// 不加密 在demo中测试使用 生产环境不建议
+//         return new BCryptPasswordEncoder();// BCryptPasswordEncoder：相同的密码明文每次生成的密文都不同，安全性更高
+//         return new MyMD5PasswordEncoder();// 自定义密码比较器
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
@@ -201,7 +245,7 @@ public class SecurityConfiguration {
 }
 
 
-/**
+/*
  * 在 Spring Security 中，和登录成功重定向 URL 相关的方法有两个
  * defaultSuccessUrl successForwardUrl
  * defaultSuccessUrl 有一个重载的方法，我们先说一个参数的 defaultSuccessUrl 方法。
@@ -217,13 +261,6 @@ public class SecurityConfiguration {
  * 或者你直接就在浏览器输入了登录页面地址，登录成功后也是来到 /index。
  *
  * 与登录成功相似，登录失败也是有两个方法：
- * failureForwardUrl failureUrl
- * 「这两个方法在设置的时候也是设置一个即可」。
+ * failureForwardUrl failureUrl 这两个方法在设置的时候也是设置一个即可
  * failureForwardUrl 是登录失败之后会发生服务端跳转，failureUrl 则在登录失败之后，会发生重定向。
- */
-
-/**
- * spring boot如果想在浏览器中直接访问html (localhost:8090/login.html) 在resources下新建public目录
- * 否则的话必须通过视图渲染解析才能访问 也就是loginPage("/login.html") 404的原因
- * spring boot默认首页会去访问static/index.html 所以不配置defaultSuccessUrl首页的话也不会报错 如果配置的话必须在Controller写接口 否则会报404
  */

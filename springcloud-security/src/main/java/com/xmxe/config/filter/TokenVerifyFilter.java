@@ -1,4 +1,4 @@
-package com.xmxe.config;
+package com.xmxe.config.filter;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,12 +30,12 @@ public class TokenVerifyFilter  extends BasicAuthenticationFilter {
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         String header = request.getHeader("Authorization");
         if (header == null || !header.startsWith("Bearer ")) {
-            //如果携带错误的token，则给用户提示请登录！
+            // 如果携带错误的token，则给用户提示请登录！
             chain.doFilter(request, response);
             response.setContentType("application/json;charset=utf-8");
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             PrintWriter out = response.getWriter();
-            Map resultMap = new HashMap();
+            Map<String,Object> resultMap = new HashMap<>();
             resultMap.put("code", HttpServletResponse.SC_FORBIDDEN);
             resultMap.put("msg", "请登录！");
             out.write(new ObjectMapper().writeValueAsString(resultMap));
