@@ -1,4 +1,4 @@
-##### HttpSecurity常用方法
+### HttpSecurity常用方法
 
 | [HttpSecurity常用方法](https://blog.csdn.net/qq_52006948/article/details/122729236)                | 说明                                                         |
 | ------------------- | ------------------------------------------------------------ |
@@ -26,7 +26,7 @@
 
 ---
 
-##### Spring Security认证流程
+### Spring Security认证流程
 
 1. Spring Security支持多种用户认证的方式，最常用的是基于用户名和密码的用户认证方式，其认证流程如下图所示：
 
@@ -64,7 +64,7 @@
 
 ---
 
-##### Spring Security登录流程
+### Spring Security登录流程
 
 1. 用户在页面输入账户密码并提交。
 2. UsernamePasswordAuthenticationFilter拦截认证请求并获取用户输入的账号和密码，
@@ -79,7 +79,7 @@ AuthenticationManager.authenticate()-->ProviderManager.authenticate()-->DaoAuthe
 
 ---
 
-##### 相关文章
+### 相关文章
 
 - [SpringBoot安全认证Security](https://zhuanlan.zhihu.com/p/67519928)
 - [单点登陆注解@EnableOAuth2Sso](https://mp.weixin.qq.com/s?__biz=MzI1NDY0MTkzNQ==&mid=2247488278&idx=1&sn=b21345a1daa86dd48ea89cdb9138def8&scene=21#wechat_redirect)
