@@ -81,6 +81,7 @@ AuthenticationManager.authenticate()-->ProviderManager.authenticate()-->DaoAuthe
 
 ### 相关文章
 
+- [官方文档](https://docs.spring.io/spring-security/reference/)
 - [SpringBoot安全认证Security](https://zhuanlan.zhihu.com/p/67519928)
 - [单点登陆注解@EnableOAuth2Sso](https://mp.weixin.qq.com/s?__biz=MzI1NDY0MTkzNQ==&mid=2247488278&idx=1&sn=b21345a1daa86dd48ea89cdb9138def8&scene=21#wechat_redirect)
 - [Spring Security中的权限注解很神奇吗?(@PreAuthorize)](https://mp.weixin.qq.com/s/TaPlws-ZLTDUnffuiw-r1Q)
