@@ -100,3 +100,4 @@ AuthenticationManager.authenticate()-->ProviderManager.authenticate()-->DaoAuthe
 - [认证和授权：前后端分离状态下使用Spring Security实现安全访问控制](https://mp.weixin.qq.com/s/kB2SViBlcKwl2cV91FbidQ)
 - [Spring Security中的RememberMe登录，so easy！](https://mp.weixin.qq.com/s/ZWwlheacryW5Zmo-Xw269g)
 - [一文带你搞懂Spring Security](https://mp.weixin.qq.com/s/3L-RTpvB9Q248_g7fBtDVA)
+- [盘点Spring Security框架中的八大经典设计模式](https://mp.weixin.qq.com/s/xZrsy7bp8xN3EJblz7TLHw)
